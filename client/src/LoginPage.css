@@ -1,0 +1,259 @@
+/* client/src/LoginPage.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #ff7c00;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Desktop curved background */
+.desktop-layout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.curve-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 0 350px 350px 0;
+}
+
+.welcome-area {
+  position: absolute;
+  top: 50%;
+  left: 100px;
+  transform: translateY(-50%);
+  max-width: 480px;
+  color: #333;
+  z-index: 2;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  font-weight: 800;
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, #ff6b00, #ffa319);
+  color: white;
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: bold;
+}
+
+.logo-text {
+  font-size: 48px;
+  background: linear-gradient(135deg, #ff6b00, #ffa319);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-area p {
+  font-size: 16px;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* Cards container */
+.cards-container {
+  display: flex;
+  gap: 32px;
+  z-index: 10;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Shared card styles */
+.login-card,
+.signup-card-mobile {
+  background: white;
+  border-radius: 32px;
+  width: 380px;
+  padding: 40px 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.card-header {
+  margin-bottom: 30px;
+}
+
+.logo-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-weight: 800;
+  font-size: 30px;
+}
+
+.logo-small .logo-icon {
+  width: 56px;
+  height: 56px;
+  font-size: 32px;
+  border-radius: 16px;
+}
+
+.logo-small .logo-text {
+  font-size: 36px;
+  background: linear-gradient(135deg, #ff6b00, #ffa319);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-card h3,
+.signup-card-mobile h3 {
+  font-size: 22px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Inputs */
+.login-card input,
+.signup-card-mobile input {
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  background-color: #fdfdfd;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.login-card input:focus,
+.signup-card-mobile input:focus {
+  outline: none;
+  border-color: #ff6b00;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+
+/* Checkbox */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+  margin: 12px 0 20px;
+  justify-content: flex-start;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Links */
+.forgot-link {
+  display: block;
+  color: #ff6b00;
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.signup-text {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #666;
+}
+
+.signup-text a {
+  color: #ff6b00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Buttons */
+.sign-in-btn,
+.sign-up-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.sign-in-btn:hover,
+.sign-up-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
+}
+
+/* Display the success or error message here */
+.message {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 15px;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .desktop-layout {
+    display: none;
+  }
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card,
+  .signup-card-mobile {
+    width: 100%;
+    max-width: 380px;
+    padding: 34px 24px;
+  }
+}
