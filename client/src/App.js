@@ -1,23 +1,23 @@
-import logo from './logo.svg';
+import { useState, useEffect } from 'react'; // Import hooks
 import './App.css';
 
 function App() {
+  // Create a state variable to hold our message
+  const [message, setMessage] = useState('');
+
+  // useEffect runs once when the component loads
+  useEffect(() => {
+    // Fetch the message from our backend API
+    fetch('http://localhost:5000/api/message')
+      .then(res => res.json())
+      .then(data => setMessage(data.message));
+  }, []); // The empty array means "only run this once"
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>My ERP System</h1>
+      {/* Display the message from the backend */}
+      <h2>{message}</h2>
     </div>
   );
 }
