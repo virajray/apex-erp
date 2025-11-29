@@ -262,3 +262,37 @@
   border-radius: 14px;
   font-size: 18px;
 }
+
+.branch-filter-container {
+  margin: 20px 0;
+  text-align: right;
+}
+.branch-select {
+  padding: 10px 16px;
+  border: 2px solid #ff8c00;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  background: white;
+}
+.admin-panel {
+  margin: 40px 0;
+  padding: 24px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+}
+.user-branch-table th, .user-branch-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.user-branch-table th {
+  background: #fff8f0;
+  color: #ff6b00;
+}
+.user-branch-table select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}

@@ -4,45 +4,74 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './LoginPage.css';
 
-// Accept handleLogin from App.js
+// Accept handleLogin from App.js (this triggers redirect + saves user data)
 const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // For better UX
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setMessage('');
+    setIsLoading(true);
 
     try {
+      // Send login request to backend
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password,
       });
 
-      // SUCCESS → Tell App.js we are logged in!
-      console.log('Login successful!', response.data.token);
-      handleLogin(response.data.token);   // THIS LINE DOES THE REDIRECT
+      // Extract data from response
+      const { token, user } = response.data;
 
-      // Optional: show a quick success toast (will disappear when we redirect)
-      setMessage('Login successful! Redirecting...');
+      console.log('Login successful!', { token, user });
+
+      // Save everything to localStorage so it survives page refresh
+      localStorage.setItem('erp-token', token);
+      localStorage.setItem('erp-user', JSON.stringify(user));
+
+      // Pass full data to App.js → triggers redirect to dashboard
+      handleLogin({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          branchId: user.branchId,
+          branchName: user.branchName || 'No Branch Assigned'
+        }
+      });
+
+      // Show success message briefly before redirect
+      setMessage('Login successful! Welcome back');
 
     } catch (error) {
-      console.error('Login error!', error);
-      setMessage(error.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login failed:', error);
+
+      // Show user-friendly error
+      const errorMsg = error.response?.data?.message || 'Invalid email or password';
+      setMessage(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="app-wrapper">
+      {/* Beautiful curved background */}
       <div className="desktop-layout">
         <div className="curve-bg"></div>
       </div>
 
+      {/* Login Card */}
       <div className="cards-container">
         <div className="login-card">
           <div className="card-header">
             <div className="logo-small">
-              <span className="logo-icon">E€</span>
+              <span className="logo-icon">AE</span>
               <span className="logo-text">Apex ERP</span>
             </div>
             <h3>Sign In to your account</h3>
@@ -55,6 +84,7 @@ const LoginPage = ({ handleLogin }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
             <input
               type="password"
@@ -62,24 +92,33 @@ const LoginPage = ({ handleLogin }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
 
             <label className="checkbox-label">
-              <input type="checkbox" />
+              <input type="checkbox" disabled={isLoading} />
               <span>Remember me</span>
             </label>
 
             <a href="#" className="forgot-link">Forgot password?</a>
 
-            <button type="submit" className="sign-in-btn">
-              Sign In
+            <button 
+              type="submit" 
+              className="sign-in-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </div>
       </div>
 
-      {/* Success / error toast */}
-      {message && <p className="message">{message}</p>}
+      {/* Toast message (success or error) */}
+      {message && (
+        <p className={`message ${message.includes('successful') ? 'success' : 'error'}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 };
