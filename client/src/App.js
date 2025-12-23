@@ -13,6 +13,10 @@ import LoginPage from "./LoginPage";
 import DashboardPage from "./components/DashboardPage";
 import BranchesPage from "./pages/BranchesPage";   // ← NEW PAGE
 import OrdersPage from "./pages/OrdersPage";         // ← Optional future page
+import ProductsPage from "./pages/ProductsPage";
+import UsersPage from "./pages/UsersPage";
+import Sidebar from "./components/Sidebar";                 // ← NEW (if not already there)
+import Header from "./components/Header";
 import "./App.css";
 
 // Optional: Create a simple 404 page
@@ -61,6 +65,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    
       <Routes>
         {/* Public Routes */}
         <Route
@@ -93,7 +98,32 @@ function App() {
           }
         />
 
-        {/* Future pages — just add them here */}
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <div className="app-layout">
+                <div className="main-content">
+                  <UsersPage />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        {<Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <div className="app-layout">
+                <div className="main-content">
+                  
+                  <ProductsPage />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />}
         {/* <Route path="/orders" element={<ProtectedRoute><OrdersPage handleLogout={handleLogout} /></ProtectedRoute>} /> */}
 
         {/* Default Redirect */}

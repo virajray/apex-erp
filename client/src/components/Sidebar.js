@@ -9,6 +9,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Orders', path: '/orders' },
+    { name: 'Products', path: '/Products' },
     { name: 'Branches', path: '/branches' },   // ← NEW
     { name: 'Users', path: '/users' },
     { name: 'Reports', path: '/reports' },
