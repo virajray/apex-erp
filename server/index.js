@@ -193,6 +193,129 @@ app.delete('/api/branches/:id', (req, res) => {
   }
 });
 
+// USER ROUTES
+const userRoutes = require('./routes/user');
+app.use('/api/users', userRoutes);
+
+// USER MANAGEMENT ROUTES (Admin only)
+
+// GET ALL USERS
+app.get('/api/users', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ message: 'Admin only' });
+
+    const users = db.prepare('SELECT id, name, email, role, branchId FROM users').all();
+    res.json(users);
+  } catch (err) {
+    console.error('GET /api/users error:', err);
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+// CREATE NEW USER
+app.post('/api/users', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ message: 'Admin only' });
+
+    const { name, email, password, role, branchId } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required' });
+    }
+
+    // Check if email exists
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    if (existing) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // Insert user
+    const stmt = db.prepare(`
+      INSERT INTO users (name, email, password, role, branchId)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    const result = stmt.run(name, email, hashedPassword, role || 'staff', branchId || null);
+
+    res.status(201).json({ 
+      success: true, 
+      id: result.lastInsertRowid,
+      message: 'User created successfully'
+    });
+  } catch (err) {
+    console.error('POST /api/users error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// UPDATE USER
+app.put('/api/users/:id', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ message: 'Admin only' });
+
+    const { name, email, password, role, branchId } = req.body;
+
+    let query = 'UPDATE users SET name = ?, email = ?, role = ?, branchId = ?';
+    let params = [name, email, role || 'staff', branchId || null];
+
+    if (password) {
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      query += ', password = ?';
+      params.push(hashedPassword);
+    }
+
+    query += ' WHERE id = ?';
+    params.push(req.params.id);
+
+    const result = db.prepare(query).run(...params);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ success: true, message: 'User updated' });
+  } catch (err) {
+    console.error('PUT /api/users error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// DELETE USER
+app.delete('/api/users/:id', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ message: 'Admin only' });
+
+    const result = db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ success: true, message: 'User deleted' });
+  } catch (err) {
+    console.error('DELETE /api/users error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Apex ERP Server RUNNING on http://localhost:${PORT}`);
   console.log(`Login: admin@test.com / password123`);

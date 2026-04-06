@@ -33,10 +33,10 @@ const UsersPage = ({ handleLogout }) => {
   const fetchData = async () => {
     try {
       const [userRes, branchRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/users', {
+        axios.get('/api/users', {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/branches', {
+        axios.get('/api/branches', {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -48,44 +48,50 @@ const UsersPage = ({ handleLogout }) => {
     }
   };
 
-  const handleSaveUser = async () => {
-    if (!newUser.name || !newUser.email || (!editingUser && !newUser.password)) {
-      return alert('Please fill all required fields');
+const handleSaveUser = async () => {
+  // Validation
+  if (!newUser.name.trim() || !newUser.email.trim()) {
+    return alert('Name and email are required');
+  }
+  if (!editingUser && !newUser.password.trim()) {
+    return alert('Password is required for new users');
+  }
+
+  try {
+    const payload = {
+      name: newUser.name.trim(),
+      email: newUser.email.trim().toLowerCase(),
+      role: newUser.role || 'staff',
+      branchId: newUser.branchId ? parseInt(newUser.branchId) : null
+    };
+
+    // Always send password for new users, optional for edit
+    if (!editingUser || newUser.password.trim()) {
+      payload.password = newUser.password.trim();
     }
 
-    try {
-      if (editingUser) {
-        // Update user (password optional)
-        await axios.put(`http://localhost:5000/api/users/${editingUser.id}`, {
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-          branchId: newUser.branchId ? parseInt(newUser.branchId) : null,
-          password: newUser.password || undefined // only send if provided
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('User updated successfully');
-      } else {
-        // Create new user
-        await axios.post('http://localhost:5000/api/users', {
-          ...newUser,
-          branchId: newUser.branchId ? parseInt(newUser.branchId) : null
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('User created successfully');
-      }
-
-      // Reset form
-      setNewUser({ name: '', email: '', password: '', role: 'cashier', branchId: '' });
-      setEditingUser(null);
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.msg || 'Failed to save user');
+    if (editingUser) {
+      await axios.put(`/api/users/${editingUser.id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('User updated successfully');
+    } else {
+      await axios.post('/api/users', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('User created successfully');
     }
-  };
+
+    // Reset form
+    setNewUser({ name: '', email: '', password: '', role: 'cashier', branchId: '' });
+    setEditingUser(null);
+    fetchData();
+  } catch (err) {
+    console.error('Save error:', err.response?.data || err);
+    const msg = err.response?.data?.msg || err.response?.data?.message || 'Failed to save user';
+    alert(msg);
+  }
+};
 
   const handleEdit = (user) => {
     setEditingUser(user);
@@ -102,7 +108,7 @@ const UsersPage = ({ handleLogout }) => {
     if (!window.confirm('Delete this user? This cannot be undone.')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/users/${id}`, {
+      await axios.delete(`/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
